@@ -116,7 +116,7 @@ const MainAppContent: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#e8e8ef] flex justify-center selection:bg-zinc-900 selection:text-white">
       {/* Mobile Shell Container */}
-      <div className="w-full max-w-[420px] min-h-screen bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#fff2f3]/40 via-[#f6f6fa] to-[#f4f4f9] flex flex-col relative px-5 pt-2.5 shadow-2xl border-x border-black/[0.04]">
+      <div className="w-full max-w-[390px] min-h-screen bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#fff3f4]/45 via-[#f7f7fb] to-[#f4f4f8] flex flex-col relative px-4 pt-1 shadow-2xl border-x border-black/[0.04]">
         {/* Main View Router */}
         <main className="flex-1">
           {activeTab === 'home' && <CalAiHomeView />}
