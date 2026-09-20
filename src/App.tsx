@@ -1,187 +1,70 @@
-import React from 'react';
-import { AppProvider, useApp } from './context/AppContext';
-import { CalAiHomeView } from './components/CalAiHomeView';
-import { AnalyticsView } from './components/AnalyticsView';
-import { SettingsView } from './components/SettingsView';
-import { CalAiNavigation } from './components/CalAiNavigation';
-import { DiaryView } from './components/DiaryView';
-import { ProgressView } from './components/ProgressView';
-import { ProfileView } from './components/ProfileView';
-import { FoodScannerModal } from './components/FoodScannerModal';
-import { AIResultModal } from './components/AIResultModal';
-import { FoodSearchModal } from './components/FoodSearchModal';
-import { EditLogModal } from './components/EditLogModal';
-import { OnboardingFlow } from './components/OnboardingFlow';
-import { MealType, FoodLogItem } from './types';
+import { useState } from 'react';
+import { ArrowLeft } from 'lucide-react';
 
-const MainAppContent: React.FC = () => {
-  const {
-    userProfile,
-    activeTab,
-    setActiveTab,
-    isScannerOpen,
-    closeScanner,
-    openScanner,
-    isSearchOpen,
-    closeSearch,
-    targetMealType,
-    aiResultData,
-    setAiResultData,
-    editingLogItem,
-    setEditingLogItem,
-    addFoodLog,
-    updateFoodLog,
-    deleteFoodLog,
-    finishOnboarding,
-    updateProfile,
-  } = useApp();
+const genders = ['Male', 'Female', 'Other'] as const;
+type Gender = (typeof genders)[number];
 
-  // If user has not onboarded or chose to re-onboard, show the 10-step flow
-  if (!userProfile.isOnboarded) {
-    return (
-      <OnboardingFlow
-        initialProfile={userProfile}
-        onComplete={finishOnboarding}
-      />
-    );
-  }
-
-  // Handle logging AI detected meal to diary
-  const handleAddAIResultToDiary = (data: {
-    mealType: MealType;
-    mealTitle: string;
-    servingSize: string;
-    calories: number;
-    protein: number;
-    carbs: number;
-    fat: number;
-    fiber: number;
-    weightGrams: number;
-    components: any[];
-    imageUrl?: string;
-  }) => {
-    const todayStr = new Date().toISOString().split('T')[0];
-
-    addFoodLog({
-      date: todayStr,
-      mealType: data.mealType,
-      foodName: data.mealTitle,
-      servingSize: data.servingSize,
-      quantity: 1,
-      weightGrams: data.weightGrams,
-      calories: data.calories,
-      protein: data.protein,
-      carbs: data.carbs,
-      fat: data.fat,
-      fiber: data.fiber,
-      components: data.components,
-      imageUrl: data.imageUrl,
-      source: 'ai',
-    });
-
-    setAiResultData(null);
-  };
-
-  // Handle search selection
-  const handleSelectFromSearch = (entry: {
-    mealType: MealType;
-    foodName: string;
-    servingSize: string;
-    quantity: number;
-    weightGrams: number;
-    calories: number;
-    protein: number;
-    carbs: number;
-    fat: number;
-    fiber?: number;
-  }) => {
-    const todayStr = new Date().toISOString().split('T')[0];
-
-    addFoodLog({
-      date: todayStr,
-      mealType: entry.mealType,
-      foodName: entry.foodName,
-      servingSize: entry.servingSize,
-      quantity: entry.quantity,
-      weightGrams: entry.weightGrams,
-      calories: entry.calories,
-      protein: entry.protein,
-      carbs: entry.carbs,
-      fat: entry.fat,
-      fiber: entry.fiber ?? 0,
-      source: 'manual',
-    });
-  };
-
+function StatusBar() {
   return (
-    <div className="min-h-screen bg-[#e8e8ef] flex justify-center selection:bg-zinc-900 selection:text-white">
-      {/* Mobile Shell Container */}
-      <div className="w-full max-w-[390px] min-h-screen bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#fff3f4]/45 via-[#f7f7fb] to-[#f4f4f8] flex flex-col relative px-4 pt-1 shadow-2xl border-x border-black/[0.04]">
-        {/* Main View Router */}
-        <main className="flex-1">
-          {activeTab === 'home' && <CalAiHomeView />}
-          {activeTab === 'analytics' && <AnalyticsView />}
-          {activeTab === 'settings' && <SettingsView />}
-          {activeTab === 'diary' && <DiaryView />}
-          {activeTab === 'progress' && <ProgressView />}
-          {activeTab === 'profile' && <ProfileView />}
-        </main>
-
-        {/* Minimalist Bottom Navigation matching screenshot */}
-        <CalAiNavigation
-          activeTab={activeTab}
-          onSelectTab={setActiveTab}
-          onOpenScan={() => openScanner()}
-        />
-
-        {/* Camera / AI Scanner Modal */}
-        <FoodScannerModal
-          isOpen={isScannerOpen}
-          onClose={closeScanner}
-          onScanComplete={(result) => {
-            setAiResultData(result);
-          }}
-        />
-
-        {/* AI Result & Breakdown Modal */}
-        <AIResultModal
-          isOpen={Boolean(aiResultData)}
-          result={aiResultData}
-          defaultMealType={targetMealType}
-          onClose={() => setAiResultData(null)}
-          onAddToDiary={handleAddAIResultToDiary}
-          onScanAgain={() => {
-            setAiResultData(null);
-            openScanner(targetMealType);
-          }}
-        />
-
-        {/* Manual Indian Food Search Modal */}
-        <FoodSearchModal
-          isOpen={isSearchOpen}
-          targetMealType={targetMealType}
-          onClose={closeSearch}
-          onSelectFood={handleSelectFromSearch}
-        />
-
-        {/* Edit / Detail Log Modal */}
-        <EditLogModal
-          item={editingLogItem}
-          onClose={() => setEditingLogItem(null)}
-          onSave={updateFoodLog}
-          onDelete={deleteFoodLog}
-        />
+    <div className="status-bar" aria-label="Phone status bar">
+      <div className="brand-pill">screens<span>design</span></div>
+      <div className="status-icons" aria-hidden="true">
+        <div className="signal"><i /><i /><i /><i /></div>
+        <div className="wifi"><b /><b /><b /></div>
+        <div className="battery"><div /></div>
       </div>
     </div>
   );
-};
-
-export function App() {
-  return (
-    <AppProvider>
-      <MainAppContent />
-    </AppProvider>
-  );
 }
 
-export default App;
+export default function App() {
+  const [selectedGender, setSelectedGender] = useState<Gender>('Female');
+  const [step, setStep] = useState(1);
+
+  const continueFlow = () => setStep((current) => Math.min(current + 1, 10));
+  const goBack = () => setStep((current) => Math.max(current - 1, 1));
+
+  return (
+    <div className="app-background">
+      <main className="phone-screen">
+        <StatusBar />
+
+        <section className="onboarding-content">
+          <div className="navigation-row">
+            <button className="back-button" onClick={goBack} aria-label="Go back">
+              <ArrowLeft size={56} strokeWidth={1.8} />
+            </button>
+            <div className="progress-track" aria-label={`Step ${step} of 10`}>
+              <div className="progress-value" style={{ width: `${step * 10}%` }} />
+            </div>
+          </div>
+
+          <header className="intro-copy">
+            <h1>Choose your Gender</h1>
+            <p>This will be used to calibrate your custom plan.</p>
+          </header>
+
+          <div className="gender-options" role="radiogroup" aria-label="Choose your gender">
+            {genders.map((gender) => (
+              <button
+                key={gender}
+                className={`gender-option ${selectedGender === gender ? 'selected' : ''}`}
+                onClick={() => setSelectedGender(gender)}
+                role="radio"
+                aria-checked={selectedGender === gender}
+              >
+                {gender}
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <div className="continue-wrap">
+          <button className="continue-button" onClick={continueFlow}>
+            Continue
+          </button>
+        </div>
+      </main>
+    </div>
+  );
+}
