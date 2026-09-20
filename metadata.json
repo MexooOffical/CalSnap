@@ -1,0 +1,6 @@
+{
+  "name": "Aahar: AI Indian Food & Calorie Tracker",
+  "description": "Minimalist, premium AI-powered food tracking application specialized in Indian cuisine, portion estimation, and daily nutrition targets.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
