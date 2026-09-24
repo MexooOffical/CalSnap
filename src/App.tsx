@@ -2,69 +2,61 @@ import { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 
 const genders = ['Male', 'Female', 'Other'] as const;
-type Gender = (typeof genders)[number];
 
-function StatusBar() {
-  return (
-    <div className="status-bar" aria-label="Phone status bar">
-      <div className="brand-pill">screens<span>design</span></div>
-      <div className="status-icons" aria-hidden="true">
-        <div className="signal"><i /><i /><i /><i /></div>
-        <div className="wifi"><b /><b /><b /></div>
-        <div className="battery"><div /></div>
-      </div>
-    </div>
-  );
-}
+type Gender = (typeof genders)[number];
 
 export default function App() {
   const [selectedGender, setSelectedGender] = useState<Gender>('Female');
-  const [step, setStep] = useState(1);
-
-  const continueFlow = () => setStep((current) => Math.min(current + 1, 10));
-  const goBack = () => setStep((current) => Math.max(current - 1, 1));
 
   return (
-    <div className="app-background">
-      <main className="phone-screen">
-        <StatusBar />
+    <div className="app-shell">
+      <div className="phone-frame">
+        <header className="topbar">
+          <div className="brand-pill">screensdesign</div>
+          <div className="status-block" aria-hidden="true">
+            <span className="status-dot" />
+            <span className="status-dot" />
+            <span className="status-dot" />
+          </div>
+        </header>
 
-        <section className="onboarding-content">
-          <div className="navigation-row">
-            <button className="back-button" onClick={goBack} aria-label="Go back">
-              <ArrowLeft size={56} strokeWidth={1.8} />
+        <main className="screen-body">
+          <div className="top-controls">
+            <button className="back-button" aria-label="Back">
+              <ArrowLeft size={24} strokeWidth={2.5} />
             </button>
-            <div className="progress-track" aria-label={`Step ${step} of 10`}>
-              <div className="progress-value" style={{ width: `${step * 10}%` }} />
+            <div className="progress-line" aria-label="Progress line">
+              <span />
             </div>
           </div>
 
-          <header className="intro-copy">
+          <section className="content">
             <h1>Choose your Gender</h1>
             <p>This will be used to calibrate your custom plan.</p>
-          </header>
+          </section>
 
-          <div className="gender-options" role="radiogroup" aria-label="Choose your gender">
+          <div className="gender-list" role="radiogroup" aria-label="Gender options">
             {genders.map((gender) => (
               <button
                 key={gender}
-                className={`gender-option ${selectedGender === gender ? 'selected' : ''}`}
-                onClick={() => setSelectedGender(gender)}
+                type="button"
                 role="radio"
                 aria-checked={selectedGender === gender}
+                className={`gender-option ${selectedGender === gender ? 'selected' : ''}`}
+                onClick={() => setSelectedGender(gender)}
               >
                 {gender}
               </button>
             ))}
           </div>
-        </section>
 
-        <div className="continue-wrap">
-          <button className="continue-button" onClick={continueFlow}>
-            Continue
-          </button>
-        </div>
-      </main>
+          <div className="submit-wrap">
+            <button type="button" className="continue-button">
+              Continue
+            </button>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
